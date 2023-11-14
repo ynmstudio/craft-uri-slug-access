@@ -133,15 +133,21 @@ class ElementHelper
             return;
         }
 
-        // If the URL format returns an empty string, the URL format probably wrapped everything in a condition
+        // Render the URI, while checking whether it relies on the element's slug or not
+        $hasSlugToken = static::doesUriFormatHaveSlugTag($uriFormat);
+        $accessKey = $hasSlugToken ? null : $element->observeSlugAccess();
         $testUri = self::_renderUriFormat($uriFormat, $element);
+        $slugAccessed = $hasSlugToken ? true : $element->checkSlugAccess($accessKey, true);
+
+        // If the URL format returns an empty string, the URL format probably wrapped everything in a condition
         if ($testUri === '') {
             $element->uri = null;
             return;
         }
 
-        // Does the URL format even have a {slug} tag?
-        if (!static::doesUriFormatHaveSlugTag($uriFormat)) {
+        // Does the rendered URL even contain the element's slug?
+        if ($slugAccessed === false || strpos($testUri, $element->slug) === false)
+        {
             // Make sure it's unique
             if (!self::_isUniqueUri($testUri, $element)) {
                 throw new OperationAbortedException('Could not find a unique URI for this element');

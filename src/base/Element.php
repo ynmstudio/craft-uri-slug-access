@@ -2097,6 +2097,24 @@ abstract class Element extends Component implements ElementInterface
     private ?bool $_isFresh = null;
 
     /**
+     * @var string|null
+     * @see getSlug()
+     * @see setSlug()
+     * @see observeSlugAccess()
+     * @see checkSlugAccess()
+     * @see clearSlugAccess()
+     */
+    private ?string $_slug = null;
+
+    /**
+     * @var array
+     * @see observeSlugAccess()
+     * @see checkSlugAccess()
+     * @see clearSlugAccess()
+     */
+    private array $_slugAccess = [];
+
+    /**
      * @inheritdoc
      */
     public function __construct($config = [])
@@ -2993,6 +3011,64 @@ abstract class Element extends Component implements ElementInterface
     public function getIsHomepage(): bool
     {
         return $this->uri === self::HOMEPAGE_URI;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setSlug(?string $slug): void
+    {
+        $this->_slug = $slug;
+    }
+
+    /**
+     * Returns the element's slug
+     *
+     * @return string|null
+     */
+    public function getSlug(): ?string
+    {
+        // detect access to the `slug` property for all currently released observation keys
+        // @todo Move this logic to a Model behaviour?
+        if (!empty($this->_slugAccess))
+        {
+            foreach (array_keys($this->_slugAccess) as $key) {
+                $this->_slugAccess[$key] = true;
+            }
+        }
+
+        return $this->_slug;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function observeSlugAccess(): string
+    {
+        $key = (string)microtime();
+        $this->_slugAccess[$key] = false;
+
+        return $key;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function checkSlugAccess( string $key, bool $clear = false ): bool
+    {
+        $accessed = $this->_slugAccess[$key] ?? false;
+        if ($clear) $this->clearSlugAccess($key);
+        return $accessed;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function clearSlugAccess( string $key ): void
+    {
+        if (isset($this->_slugAccess[$key])) {
+            unset($this->_slugAccess[$key]);
+        }
     }
 
     /**

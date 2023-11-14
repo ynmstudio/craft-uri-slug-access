@@ -92,11 +92,6 @@ trait ElementTrait
     public ?string $title = null;
 
     /**
-     * @var string|null The element’s slug
-     */
-    public ?string $slug = null;
-
-    /**
      * @var string|null The element’s URI
      */
     public ?string $uri = null;

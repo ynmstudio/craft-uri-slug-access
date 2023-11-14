@@ -754,6 +754,48 @@ interface ElementInterface extends ComponentInterface
     public function getIsHomepage(): bool;
 
     /**
+     * Updates the element's slug
+     *
+     * @param string|null $slug 
+     *
+     * @return void
+     */
+    public function setSlug(?string $slug): void;
+
+    /**
+     * Returns the element's slug
+     *
+     * @return void
+     */
+    public function getSlug(): ?string;
+
+    /**
+     * Releases a key that can be used to check if the element's `slug` property is accessed later on.
+     * 
+     * @return string A unique observation key for the slug attribute.
+     */
+    public function observeSlugAccess(): string;
+
+    /**
+     * Checks whether the element's `slug` property has been accessed since given observation key was released.
+     *
+     * @param mixed $key Observation key
+     * @param bool $clear Whether to also clear slug access information observed with given `$key`
+     *
+     * @return bool
+     */
+    public function checkSlugAccess( string $key, bool $clear ): bool;
+
+    /**
+     * Clears access information for the element's `slug` property, as observed with given key.
+     *
+     * @param string $key 
+     *
+     * @return void
+     */
+    public function clearSlugAccess( string $key ): void;
+
+    /**
      * Returns the element’s full URL.
      *
      * @return string|null
